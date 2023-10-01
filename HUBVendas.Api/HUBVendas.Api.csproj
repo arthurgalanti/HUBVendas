@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HUBVendas.Domain\HUBVendas.Domain.csproj" />
+    <ProjectReference Include="..\HUBVendas.Infra\HUBVendas.Infra.csproj" />
+    <ProjectReference Include="..\HUBVendas.Service\HUBVendas.Service.csproj" />
+  </ItemGroup>
+
+</Project>
