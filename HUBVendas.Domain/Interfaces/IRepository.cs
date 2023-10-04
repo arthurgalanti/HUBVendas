@@ -7,7 +7,7 @@ namespace HUBVendas.Domain.Interfaces
     {
         Task<IEnumerable<T>> GetAll();
 
-        Task<T> GetById(int id);
+        Task<T?> GetById(int id);
 
         Task<int> Insert(T entity);
 

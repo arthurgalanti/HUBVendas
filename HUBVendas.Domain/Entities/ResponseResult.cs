@@ -1,3 +1,5 @@
+using System;
+
 namespace HUBVendas.Domain.Entities
 {
     public class ResponseResult<T> where T : Entity

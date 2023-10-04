@@ -1,3 +1,4 @@
+using System;
 namespace HUBVendas.Domain.Entities
 {
     public abstract class Entity
