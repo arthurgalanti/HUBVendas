@@ -6,10 +6,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace HUBVendas.Infra.Repositories {
     public class CategoryRepository : ICategoryRepository {
-        private readonly string _connectionString = null!;
+        private readonly string? _connectionString;
 
-        public CategoryRepository(IConfiguration configuration)
-            => _connectionString = configuration.GetConnectionString("MySQL");
+        public CategoryRepository(IConfiguration configuration) {
+            _connectionString = configuration?.GetConnectionString("MySQL");
+            if (_connectionString == null) {
+                throw new InvalidOperationException("A ConnectionString 'MySQL' não foi encontrada na configuração.");
+            }
+        }
 
         public async Task<IEnumerable<Category>> GetAll() {
             IEnumerable<Category> categories;
