@@ -51,8 +51,8 @@ namespace HUBVendas.Infra.Repositories {
             return products;
         }
 
-        public async Task<Product?> GetById(int id) {
-            Product? product;
+        public async Task<Product> GetById(Guid id) {
+            Product product;
 
             var prm = new DynamicParameters();
             prm.Add("@product_id", id);
@@ -86,9 +86,8 @@ namespace HUBVendas.Infra.Repositories {
                         Type = item.image_type,
                         Base64 = item.image_base64
                     }
-                }).FirstOrDefault();
+                }).First();
             };
-
             return product;
         }
 

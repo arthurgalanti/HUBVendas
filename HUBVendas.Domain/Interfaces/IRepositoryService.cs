@@ -1,11 +1,9 @@
 using System.Threading.Tasks;
 using HUBVendas.Domain.Entities;
 
-namespace HUBVendas.Domain.Interfaces
-{
-    public interface IRepositoryService<T> where T : Entity
-    {
-        Task<T> GetById(int id);
+namespace HUBVendas.Domain.Interfaces {
+    public interface IRepositoryService<T> where T : Entity {
+        Task<T> GetById(Guid id);
 
         Task<int> Create(T entity);
 

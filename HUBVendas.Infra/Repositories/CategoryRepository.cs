@@ -41,7 +41,7 @@ namespace HUBVendas.Infra.Repositories {
             return categories;
         }
 
-        public async Task<Category?> GetById(int id) {
+        public async Task<Category?> GetById(Guid id) {
             Category? category;
 
             var prm = new DynamicParameters();
