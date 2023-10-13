@@ -41,8 +41,8 @@ namespace HUBVendas.Infra.Repositories {
             return categories;
         }
 
-        public async Task<Category?> GetById(Guid id) {
-            Category? category;
+        public async Task<Category> GetById(Guid id) {
+            Category category;
 
             var prm = new DynamicParameters();
             prm.Add("@category_id", id);
@@ -66,14 +66,14 @@ namespace HUBVendas.Infra.Repositories {
                     Removed = item.fl_removed,
                     Name = item.category_name,
                     Description = item.category_description
-                }).FirstOrDefault();
+                }).First();
             };
 
             return category;
         }
 
-        public async Task<int> Insert(Category entity) {
-            int result = 0;
+        public async Task<bool> Insert(Category entity) {
+            var result = false;
 
             var prm = new DynamicParameters();
             prm.Add("@category_id", entity.Id);
@@ -94,7 +94,9 @@ namespace HUBVendas.Infra.Repositories {
                     );
                 ";
 
-                result = await con.ExecuteScalarAsync<int>(query, prm);
+                var exec = await con.ExecuteAsync(query, prm);
+
+                result = exec > 0;
             };
 
             return result;
@@ -123,7 +125,7 @@ namespace HUBVendas.Infra.Repositories {
 
                 var exec = await con.ExecuteAsync(query, prm);
 
-                result = (exec > 0);
+                result = exec > 0;
             }
 
             return result;

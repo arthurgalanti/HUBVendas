@@ -91,8 +91,8 @@ namespace HUBVendas.Infra.Repositories {
             return product;
         }
 
-        public async Task<int> Insert(Product entity) {
-            int result = 0;
+        public async Task<bool> Insert(Product entity) {
+            var result = false;
 
             var prm = new DynamicParameters();
             prm.Add("@product_id", entity.Id);
@@ -139,7 +139,9 @@ namespace HUBVendas.Infra.Repositories {
                     );
                 ";
 
-                result = await con.ExecuteScalarAsync<int>(query, prm);
+                var exec = await con.ExecuteScalarAsync<int>(query, prm);
+
+                result = exec > 0;
             };
 
             return result;

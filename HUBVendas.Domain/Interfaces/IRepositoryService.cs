@@ -5,7 +5,7 @@ namespace HUBVendas.Domain.Interfaces {
     public interface IRepositoryService<T> where T : Entity {
         Task<T> GetById(Guid id);
 
-        Task<int> Create(T entity);
+        Task<bool> Create(T entity);
 
         Task<bool> Update(T entity);
 

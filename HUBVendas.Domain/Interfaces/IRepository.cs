@@ -7,7 +7,7 @@ namespace HUBVendas.Domain.Interfaces {
 
         Task<T> GetById(Guid id);
 
-        Task<int> Insert(T entity);
+        Task<bool> Insert(T entity);
 
         Task<bool> Update(T entity);
 

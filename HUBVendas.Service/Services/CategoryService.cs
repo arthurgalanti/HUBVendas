@@ -14,7 +14,7 @@ namespace HUBVendas.Service.Services {
         public Task<Category> GetById(Guid id)
             => _categoryRepository.GetById(id);
 
-        public Task<int> Create(Category entity)
+        public Task<bool> Create(Category entity)
             => _categoryRepository.Insert(entity);
 
         public Task<bool> Update(Category entity)

@@ -20,7 +20,7 @@ namespace HUBVendas.Service.Services {
 
             return result;
         }
-        public async Task<int> Create(Product entity)
+        public async Task<bool> Create(Product entity)
             => await _productRepository.Insert(entity);
 
         public async Task<bool> Delete(Product entity)

@@ -1,7 +1,7 @@
 using System;
 
 namespace HUBVendas.Domain.Entities {
-    public class ResponseResult<T> where T : Entity {
+    public class ResponseResult<T> {
         public ResponseInfo Info { get; set; } = new ResponseInfo();
         public string Date { get => DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"); }
         public T? Data { get; set; }
@@ -9,7 +9,7 @@ namespace HUBVendas.Domain.Entities {
         public void SetError(string message) {
             Info.Message = message;
             Info.Success = false;
-            Data = null;
+            Data = default;
         }
     }
 
