@@ -3,7 +3,7 @@ using HUBVendas.Domain.Entities;
 
 namespace HUBVendas.Domain.Interfaces {
     public interface IRepositoryService<T> where T : Entity {
-        Task<T> GetById(Guid id);
+        Task<T?> GetById(Guid id);
 
         Task<bool> Create(T entity);
 

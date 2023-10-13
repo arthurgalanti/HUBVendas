@@ -12,11 +12,14 @@ namespace HUBVendas.Service.Services {
         }
         public async Task<List<Product>> GetList() {
             var products = await _productRepository.GetAll();
-
+            Category? category;
             var result = products.ToList();
 
-            foreach (var p in result)
-                p.Category = await _categoryService.GetById(p.Category.Id);
+            foreach (var p in result) {
+                category = await _categoryService.GetById(p.Category!.Id);
+                if (category != null)
+                    p.Category = category;
+            }
 
             return result;
         }
@@ -26,9 +29,14 @@ namespace HUBVendas.Service.Services {
         public async Task<bool> Delete(Product entity)
             => await _productRepository.Delete(entity);
 
-        public async Task<Product> GetById(Guid id) {
+        public async Task<Product?> GetById(Guid id) {
             var product = await _productRepository.GetById(id);
-            product.Category = await _categoryService.GetById(id);
+            if (product != null) {
+                var category = await _categoryService.GetById(id);
+                if (category != null) {
+                    product.Category = category;
+                }
+            }
             return product;
         }
 

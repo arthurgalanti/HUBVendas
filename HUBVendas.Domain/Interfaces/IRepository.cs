@@ -5,7 +5,7 @@ namespace HUBVendas.Domain.Interfaces {
     public interface IRepository<T> where T : class {
         Task<IEnumerable<T>> GetAll();
 
-        Task<T> GetById(Guid id);
+        Task<T?> GetById(Guid id);
 
         Task<bool> Insert(T entity);
 

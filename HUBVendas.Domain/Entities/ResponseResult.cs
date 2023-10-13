@@ -6,16 +6,30 @@ namespace HUBVendas.Domain.Entities {
         public string Date { get => DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"); }
         public T? Data { get; set; }
 
-        public void SetError(string message) {
-            Info.Message = message;
+        public void SetErrors(List<string> message) {
+            Info.Messages.Clear();
+            Info.Messages = message;
             Info.Success = false;
             Data = default;
+        }
+        public void SetError(string message) {
+            Info.Messages.Clear();
+            Info.Messages.Add(message);
+            Info.Success = false;
+            Data = default;
+        }
+
+        public void SetSucess(string message, T? data = default) {
+            Info.Messages.Clear();
+            Info.Messages.Add(message);
+            Info.Success = true;
+            Data = data;
         }
     }
 
     public class ResponseInfo {
         public bool Success { get; set; } = true;
 
-        public string Message { get; set; } = "Operação realizada com sucesso!";
+        public List<string> Messages { get; set; } = new List<string>();
     }
 }

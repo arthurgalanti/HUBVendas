@@ -1,8 +1,8 @@
 using Dapper;
-using System.Data.SqlClient;
 using HUBVendas.Domain.Entities;
 using HUBVendas.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using MySqlConnector;
 
 namespace HUBVendas.Infra.Repositories {
     public class ProductRepository : IProductRepository {
@@ -18,7 +18,7 @@ namespace HUBVendas.Infra.Repositories {
         public async Task<IEnumerable<Product>> GetAll() {
             IEnumerable<Product> products;
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @" 
                     SELECT
                         *
@@ -51,13 +51,13 @@ namespace HUBVendas.Infra.Repositories {
             return products;
         }
 
-        public async Task<Product> GetById(Guid id) {
-            Product product;
+        public async Task<Product?> GetById(Guid id) {
+            Product? product;
 
             var prm = new DynamicParameters();
             prm.Add("@product_id", id);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @" 
                     SELECT
                         *
@@ -86,7 +86,7 @@ namespace HUBVendas.Infra.Repositories {
                         Type = item.image_type,
                         Base64 = item.image_base64
                     }
-                }).First();
+                }).FirstOrDefault();
             };
             return product;
         }
@@ -96,17 +96,17 @@ namespace HUBVendas.Infra.Repositories {
 
             var prm = new DynamicParameters();
             prm.Add("@product_id", entity.Id);
-            prm.Add("@created_on", entity.CreatedOn);
+            prm.Add("@created_on", entity.CreatedOnString);
             prm.Add("@product_name", entity.Name);
-            prm.Add("@ptoduct_description", entity.Description);
+            prm.Add("@product_description", entity.Description);
             prm.Add("@unit_price", entity.UnitPrice);
             prm.Add("@quantity", entity.Quantity);
             prm.Add("@image_name", entity.Image?.Name);
             prm.Add("@image_type", entity.Image?.Type);
             prm.Add("@image_base64", entity.Image?.Base64);
-            prm.Add("@categpry_id", entity.Category.Id);
+            prm.Add("@category_id", entity.Category.Id);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     INSERT INTO tb_product
                     (
@@ -139,7 +139,7 @@ namespace HUBVendas.Infra.Repositories {
                     );
                 ";
 
-                var exec = await con.ExecuteScalarAsync<int>(query, prm);
+                var exec = await con.ExecuteAsync(query, prm);
 
                 result = exec > 0;
             };
@@ -162,7 +162,7 @@ namespace HUBVendas.Infra.Repositories {
             prm.Add("@image_type", entity.Image?.Type);
             prm.Add("@image_base64", entity.Image?.Base64);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     UPDATE tb_product
                     SET
@@ -194,7 +194,7 @@ namespace HUBVendas.Infra.Repositories {
             var prm = new DynamicParameters();
             prm.Add("@product_id", entity.Id);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     UPDATE tb_product
                     SET

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Flunt.Notifications;
+using Flunt.Validations;
 
 namespace HUBVendas.Domain.Entities {
     public class Product : Entity {
@@ -32,7 +34,7 @@ namespace HUBVendas.Domain.Entities {
         }
     }
 
-    public class ProductDTO {
+    public class ProductDTO : Notifiable<Notification> {
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; }
@@ -44,5 +46,16 @@ namespace HUBVendas.Domain.Entities {
         public ProductImage? Image { get; set; }
 
         public Guid CategoryId { get; set; }
+
+        public void Validate() {
+            AddNotifications(
+            new Contract<Notification>()
+                .Requires()
+                .IsNotNullOrWhiteSpace(Name, "Nome", "O Nome do produto é obrigatório!")
+                .IsNotNullOrEmpty(CategoryId.ToString(), "IDCategoria", "O ID da categoria é obrigatório!")
+                .IsGreaterThan(UnitPrice, 0, "Preço", "Preço minímo obrigatorio!")
+                .IsGreaterOrEqualsThan(Quantity, 0, "Quantidade", "Quantidade miníma obrigatoria!")
+        );
+        }
     }
 }

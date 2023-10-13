@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using HUBVendas.Domain.Entities;
 using HUBVendas.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using MySqlConnector;
 
 namespace HUBVendas.Infra.Repositories {
     public class CategoryRepository : ICategoryRepository {
@@ -18,7 +19,7 @@ namespace HUBVendas.Infra.Repositories {
         public async Task<IEnumerable<Category>> GetAll() {
             IEnumerable<Category> categories;
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @" 
                     SELECT 
                     * 
@@ -41,13 +42,13 @@ namespace HUBVendas.Infra.Repositories {
             return categories;
         }
 
-        public async Task<Category> GetById(Guid id) {
-            Category category;
+        public async Task<Category?> GetById(Guid id) {
+            Category? category;
 
             var prm = new DynamicParameters();
             prm.Add("@category_id", id);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     SELECT
                         *
@@ -66,7 +67,7 @@ namespace HUBVendas.Infra.Repositories {
                     Removed = item.fl_removed,
                     Name = item.category_name,
                     Description = item.category_description
-                }).First();
+                }).FirstOrDefault();
             };
 
             return category;
@@ -79,17 +80,17 @@ namespace HUBVendas.Infra.Repositories {
             prm.Add("@category_id", entity.Id);
             prm.Add("@category_name", entity.Name);
             prm.Add("@category_description", entity.Description);
-            prm.Add("@created_on", entity.CreatedOn);
+            prm.Add("@created_on", entity.CreatedOnString);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     INSERT INTO tb_category (category_id, created_on, fl_active, fl_removed, category_name, category_description)
                     VALUES (
-						@category_id
+						@category_id,
                         @created_on,
                         1,
                         0,
-                        category_name,
+                        @category_name,
                         @category_description
                     );
                 ";
@@ -111,7 +112,7 @@ namespace HUBVendas.Infra.Repositories {
             prm.Add("@category_description", entity.Description);
             prm.Add("@fl_active", entity.Active ? 1 : 0);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     UPDATE tb_category
                     SET
@@ -136,7 +137,7 @@ namespace HUBVendas.Infra.Repositories {
             var prm = new DynamicParameters();
             prm.Add("@category_id", entity.Id);
 
-            using (var con = new SqlConnection(_connectionString)) {
+            using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
                     UPDATE tb_category
                     SET

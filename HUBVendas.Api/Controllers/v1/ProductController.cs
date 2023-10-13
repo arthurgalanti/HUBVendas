@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HUBVendas.Api.Controllers.v1 {
 
     [ApiController]
-    [Route("api/v1")]
+    [Route("api/v1/product")]
     public class ProductController : Controller {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
@@ -25,12 +25,17 @@ namespace HUBVendas.Api.Controllers.v1 {
 
             try {
                 var result = await _productService.GetList();
+                var filteredList = result.Where(x => !onlyActive || x.Active).ToList();
 
-                response.Data = result.Where(x => !onlyActive || x.Active).ToList();
+                if (filteredList.Count == 0) {
+                    response.SetSucess("Não há nenhum produto na lista.");
+                    return Ok(response);
+                }
 
                 if (!loadImages)
-                    response.Data.ForEach(p => p.Image = null);
+                    filteredList.ForEach(p => p.Image = null);
 
+                response.SetSucess("Produtos listados com sucesso!", filteredList);
                 return Ok(response);
             }
             catch (Exception e) {
@@ -41,7 +46,7 @@ namespace HUBVendas.Api.Controllers.v1 {
         [ProducesResponseType(typeof(ResponseResult<Product>), 200)]
         [ProducesResponseType(typeof(ResponseResult<object>), 404)]
         [ProducesResponseType(typeof(ResponseResult<object>), 500)]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<ResponseResult<Product>>> GetAsync([FromRoute, Required] Guid id) {
             var response = new ResponseResult<Product>();
 
@@ -53,8 +58,7 @@ namespace HUBVendas.Api.Controllers.v1 {
                     return NotFound(response);
                 }
 
-                response.Data = product;
-
+                response.SetSucess("Produto listado com sucesso!", product);
                 return Ok(response);
             }
             catch (Exception e) {
@@ -70,6 +74,13 @@ namespace HUBVendas.Api.Controllers.v1 {
             var response = new ResponseResult<object>();
 
             try {
+                request.Validate();
+                if (!request.IsValid) {
+                    var notifications = request.Notifications.Select(x => x.Message).ToList();
+                    response.SetErrors(notifications);
+                    return BadRequest(response);
+                }
+
                 var category = await _categoryService.GetById(request.CategoryId);
 
                 if (category == null) {
@@ -90,13 +101,14 @@ namespace HUBVendas.Api.Controllers.v1 {
                     product.Image.SetImage($"{DateTime.Now:yyyyMMddHHmm}-{request.Image.Name}", request.Image.Type, request.Image.Base64);
                 }
 
-                var resultId = await _productService.Create(product);
+                var result = await _productService.Create(product);
 
-                if (resultId == false)
-                    throw new Exception("Ocorreu um erro ao tentar cadastrar o produto.");
+                if (result == false) {
+                    response.SetError("Ocorreu um erro ao tentar cadastrar o produto.");
+                    return StatusCode(500, response);
+                }
 
-                response.Data = product;
-
+                response.SetSucess("Produto cadastrado com sucesso!", product);
                 return Created(nameof(CreateAsync), response);
             }
             catch (Exception e) {
@@ -105,13 +117,21 @@ namespace HUBVendas.Api.Controllers.v1 {
         }
 
         [ProducesResponseType(typeof(ResponseResult<object>), 200)]
+        [ProducesResponseType(typeof(ResponseResult<object>), 400)]
         [ProducesResponseType(typeof(ResponseResult<object>), 404)]
         [ProducesResponseType(typeof(ResponseResult<object>), 500)]
-        [HttpPut("{id:int}/edit")]
+        [HttpPut("{id:guid}/edit")]
         public async Task<ActionResult<ResponseResult<object>>> UpdateAsync([FromRoute, Required] Guid id, [FromBody] ProductDTO request, [FromQuery] bool active = true) {
             var response = new ResponseResult<object>();
 
             try {
+                request.Validate();
+                if (!request.IsValid) {
+                    var notifications = request.Notifications.Select(x => x.Message).ToList();
+                    response.SetErrors(notifications);
+                    return BadRequest(response);
+                }
+
                 var product = await _productService.GetById(id);
 
                 if (product == null) {
@@ -120,10 +140,10 @@ namespace HUBVendas.Api.Controllers.v1 {
                 }
 
                 product.Active = active;
-                product.Name = string.IsNullOrEmpty(request.Name) ? request.Name : product.Name;
-                product.Description = request.Description ?? product.Description;
-                product.UnitPrice = request.UnitPrice;
-                product.Quantity = request.Quantity;
+                product.Name = request.Name != product.Name ? request.Name : product.Name;
+                product.Description = request.Description != product.Description ? request.Description : product.Description;
+                product.UnitPrice = request.UnitPrice != product.UnitPrice ? request.UnitPrice : product.UnitPrice;
+                product.Quantity = request.Quantity != product.Quantity ? request.Quantity : product.Quantity;
                 product.Category = new Category { Id = request.CategoryId };
 
                 if (request.Image != null) {
@@ -133,9 +153,12 @@ namespace HUBVendas.Api.Controllers.v1 {
 
                 var result = await _productService.Update(product);
 
-                if (!result)
-                    throw new Exception("Ocorreu um erro ao tentar atualizar o produto.");
+                if (result == false) {
+                    response.SetError("Ocorreu um erro ao tentar atualizar o produto.");
+                    return StatusCode(500, response);
+                }
 
+                response.SetSucess("Produto atualizado com sucesso!", product);
                 return Ok(response);
             }
             catch (Exception e) {
@@ -146,7 +169,7 @@ namespace HUBVendas.Api.Controllers.v1 {
         [ProducesResponseType(typeof(ResponseResult<object>), 200)]
         [ProducesResponseType(typeof(ResponseResult<object>), 404)]
         [ProducesResponseType(typeof(ResponseResult<object>), 500)]
-        [HttpPatch("{id:int}/remove")]
+        [HttpPatch("{id:guid}/remove")]
         public async Task<ActionResult<ResponseResult<object>>> RemoveAsync([FromRoute, Required] Guid id) {
             var response = new ResponseResult<object>();
 
@@ -160,8 +183,10 @@ namespace HUBVendas.Api.Controllers.v1 {
 
                 var result = await _productService.Delete(product);
 
-                if (!result)
-                    throw new Exception("Ocorreu um erro ao tentar remover o produto.");
+                if (result == false) {
+                    response.SetError("Ocorreu um erro ao tentar remover o produto.");
+                    return StatusCode(500, response);
+                }
 
                 return Ok(response);
             }
