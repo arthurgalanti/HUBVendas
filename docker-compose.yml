@@ -1,0 +1,29 @@
+version: "3.7"
+
+name: hubvendas
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - $ASPNETCORE_EXPORT_PORT:80
+    depends_on:
+      - mysql
+    environment:
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    volumes:
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_USER=hubadmin
+      - MYSQL_PASSWORD=hubadminpass
+      - MYSQL_ROOT_PASSWORD=hubpass
+      - MYSQL_DATABASE=hubvendas
