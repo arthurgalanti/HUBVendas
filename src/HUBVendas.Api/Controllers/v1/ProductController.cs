@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HUBVendas.Api.Controllers.v1 {
 
     [ApiController]
-    [Route("api/v1/product")]
+    [Route("api/v1/products")]
     public class ProductController : Controller {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
@@ -91,8 +91,11 @@ namespace HUBVendas.Api.Controllers.v1 {
                 Product product = new() {
                     Name = request.Name.Trim(),
                     Description = string.IsNullOrWhiteSpace(request.Description) ? string.Empty : request.Description.Trim(),
-                    UnitPrice = request.UnitPrice,
-                    Quantity = request.Quantity,
+                    Sku = request.Sku,
+                    BarCode = request.BarCode,
+                    SellingPrice = request.SellingPrice,
+                    CostPrice = request.CostPrice,
+                    Stock = request.Stock,
                     Category = category
                 };
 
@@ -142,8 +145,11 @@ namespace HUBVendas.Api.Controllers.v1 {
                 product.Active = active;
                 product.Name = request.Name != product.Name ? request.Name : product.Name;
                 product.Description = request.Description != product.Description ? request.Description : product.Description;
-                product.UnitPrice = request.UnitPrice != product.UnitPrice ? request.UnitPrice : product.UnitPrice;
-                product.Quantity = request.Quantity != product.Quantity ? request.Quantity : product.Quantity;
+                product.Sku = request.Sku != product.Sku ? request.Sku : product.Sku;
+                product.BarCode = request.BarCode != product.BarCode ? request.BarCode : product.BarCode;
+                product.SellingPrice = request.SellingPrice != product.SellingPrice ? request.SellingPrice : product.SellingPrice;
+                product.CostPrice = request.CostPrice != product.CostPrice ? request.CostPrice : product.CostPrice;
+                product.Stock = request.Stock != product.Stock ? request.Stock : product.Stock;
                 product.Category = new Category { Id = request.CategoryId };
 
                 if (request.Image != null) {

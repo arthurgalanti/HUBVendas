@@ -32,8 +32,11 @@ namespace HUBVendas.Infra.Repositories {
                     Removed = item.fl_removed,
                     Name = item.product_name,
                     Description = item.product_description,
-                    UnitPrice = item.unit_price,
-                    Quantity = item.quantity,
+                    Sku = item.sku,
+                    BarCode = item.bar_code,
+                    CostPrice = item.cost_price,
+                    SellingPrice = item.selling_price,
+                    Stock = item.stock,
                     Category = new Category {
                         Id = item.category_id
                     },
@@ -73,8 +76,11 @@ namespace HUBVendas.Infra.Repositories {
                     Removed = item.fl_removed,
                     Name = item.product_name,
                     Description = item.product_description,
-                    UnitPrice = item.unit_price,
-                    Quantity = item.quantity,
+                    Sku = item.sku,
+                    BarCode = item.bar_code,
+                    CostPrice = item.cost_price,
+                    SellingPrice = item.selling_price,
+                    Stock = item.stock,
                     Category = new Category {
                         Id = item.category_id
                     },
@@ -96,8 +102,11 @@ namespace HUBVendas.Infra.Repositories {
             prm.Add("@created_on", entity.CreatedOnString);
             prm.Add("@product_name", entity.Name);
             prm.Add("@product_description", entity.Description);
-            prm.Add("@unit_price", entity.UnitPrice);
-            prm.Add("@quantity", entity.Quantity);
+            prm.Add("@sku", entity.Sku);
+            prm.Add("@bar_code", entity.BarCode);
+            prm.Add("@selling_price", entity.SellingPrice);
+            prm.Add("@cost_price", entity.CostPrice);
+            prm.Add("@stock", entity.Stock);
             prm.Add("@image_name", entity.Image?.Name);
             prm.Add("@image_type", entity.Image?.Type);
             prm.Add("@image_base64", entity.Image?.Base64);
@@ -113,8 +122,11 @@ namespace HUBVendas.Infra.Repositories {
                         fl_removed,
                         product_name,
                         product_description,
-                        unit_price,
-                        quantity,
+                        sku,
+                        bar_code,
+                        selling_price,
+                        cost_price,
+                        stock,
                         image_name,
                         image_type,
                         image_base64,
@@ -127,8 +139,11 @@ namespace HUBVendas.Infra.Repositories {
                         0,
                         @product_name,
                         @product_description,
-                        @unit_price,
-                        @quantity,
+                        @sku,
+                        @bar_code,
+                        @selling_price,
+                        @cost_price,
+                        @stock,
                         @image_name,
                         @image_type,
                         @image_base64,
@@ -152,8 +167,11 @@ namespace HUBVendas.Infra.Repositories {
             prm.Add("@fl_active", entity.Active ? 1 : 0);
             prm.Add("@product_name", entity.Name);
             prm.Add("@product_description", entity.Description);
-            prm.Add("@unit_price", entity.UnitPrice);
-            prm.Add("@quantity", entity.Quantity);
+            prm.Add("@sku", entity.Sku);
+            prm.Add("@bar_code", entity.BarCode);
+            prm.Add("@selling_price", entity.SellingPrice);
+            prm.Add("@cost_price", entity.CostPrice);
+            prm.Add("@stock", entity.Stock);
             prm.Add("@category_id", entity.Category.Id);
             prm.Add("@image_name", entity.Image?.Name);
             prm.Add("@image_type", entity.Image?.Type);
@@ -166,8 +184,11 @@ namespace HUBVendas.Infra.Repositories {
                         fl_active = @fl_active,
                         product_name = @product_name,
                         product_description = @product_description,
-                        unit_price = @unit_price,
-                        quantity = @quantity,
+                        sku = @sku,
+                        bar_code = @bar_code,
+                        selling_price = @selling_price,
+                        cost_price = @cost_price,
+                        stock = @stock,
                         category_id = @category_id,
                         image_name = @image_name,
                         image_type = @image_type,

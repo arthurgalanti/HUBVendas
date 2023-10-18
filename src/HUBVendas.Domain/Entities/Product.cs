@@ -10,10 +10,16 @@ namespace HUBVendas.Domain.Entities {
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; }
+        
+        public string? Sku { get; set; }
 
-        public decimal UnitPrice { get; set; }
+        public string? BarCode { get; set; }
 
-        public int Quantity { get; set; }
+        public decimal CostPrice { get; set; }
+
+        public decimal SellingPrice { get; set; }
+
+        public int Stock { get; set; }
 
         public ProductImage? Image { get; set; }
 
@@ -38,10 +44,16 @@ namespace HUBVendas.Domain.Entities {
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; }
+        
+        public string? Sku { get; set; }
 
-        public decimal UnitPrice { get; set; }
+        public string? BarCode { get; set; }
 
-        public int Quantity { get; set; }
+        public decimal CostPrice { get; set; }
+        
+        public decimal SellingPrice { get; set; }
+
+        public int Stock { get; set; }
 
         public ProductImage? Image { get; set; }
 
@@ -53,8 +65,8 @@ namespace HUBVendas.Domain.Entities {
                 .Requires()
                 .IsNotNullOrWhiteSpace(Name, "Nome", "O Nome do produto é obrigatório!")
                 .IsNotNullOrEmpty(CategoryId.ToString(), "IDCategoria", "O ID da categoria é obrigatório!")
-                .IsGreaterThan(UnitPrice, 0, "Preço", "Preço minímo obrigatorio!")
-                .IsGreaterOrEqualsThan(Quantity, 0, "Quantidade", "Quantidade miníma obrigatoria!")
+                .IsGreaterThan(SellingPrice, 0, "Valor de venda", "Valor de venda obrigatorio!")
+                .IsGreaterOrEqualsThan(Stock, 0, "Estoque", "Estoque minímo obrigatorio!")
         );
         }
     }

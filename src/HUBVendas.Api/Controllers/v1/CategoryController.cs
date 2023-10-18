@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HUBVendas.Api.Controllers.v1 {
 
     [ApiController]
-    [Route("api/v1/category")]
+    [Route("api/v1/categories")]
     public class CategoryController : Controller {
 
         private readonly ICategoryService _categoryService;
