@@ -20,7 +20,6 @@ namespace HUBVendas.Service.Services {
                 if (category != null)
                     p.Category = category;
             }
-
             return result;
         }
         public async Task<bool> Create(Product entity)

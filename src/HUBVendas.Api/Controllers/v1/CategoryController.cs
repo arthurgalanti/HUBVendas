@@ -16,8 +16,6 @@ namespace HUBVendas.Api.Controllers.v1 {
             _categoryService = categoryService;
         }
 
-        [ProducesResponseType(typeof(ResponseResult<List<Category>>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpGet]
         public async Task<ActionResult> GetAsync([FromQuery] bool onlyActive = true) {
             var response = new ResponseResult<List<Category>>();
@@ -39,9 +37,6 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<Category>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 404)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ResponseResult<Category>>> GetAsync([FromRoute, Required] Guid id) {
             var response = new ResponseResult<Category>();
@@ -62,9 +57,6 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<Category>), 201)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 400)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpPost]
         public async Task<ActionResult<ResponseResult<object>>> CreateAsync([FromBody] CategoryDTO request) {
             var response = new ResponseResult<object>();
@@ -97,10 +89,6 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<Category>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 400)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 404)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpPut("{id:guid}/edit")]
         public async Task<ActionResult<ResponseResult<object>>> UpdateAsync([FromRoute, Required] Guid id, [FromBody] CategoryDTO request, [FromQuery] bool active = true) {
             var response = new ResponseResult<object>();
@@ -139,10 +127,7 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<object>), 204)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 404)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
-        [HttpPatch("{id:guid}/remove")]
+        [HttpDelete("{id:guid}/remove")]
         public async Task<ActionResult<ResponseResult<object>>> RemoveAsync([FromRoute, Required] Guid id) {
             var response = new ResponseResult<object>();
 

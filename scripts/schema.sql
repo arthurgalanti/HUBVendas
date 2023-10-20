@@ -1,17 +1,17 @@
-CREATE DATABASE IF NOT EXISTS HUBVendas;
-USE HUBVendas;
+DROP DATABASE IF EXISTS hubvendas;
+CREATE DATABASE IF NOT EXISTS hubvendas;
+USE hubvendas;
 
-CREATE TABLE IF NOT EXISTS tb_category (
-    category_id CHAR(36) PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tb_categories (
+    id CHAR(36) PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL,
     category_description TEXT,
     created_on DATETIME NOT NULL,
-	fl_active BOOL NOT NULL,
-	fl_removed BOOL NOT NULL
+	fl_active BOOL NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS tb_product (
-    product_id CHAR(36) PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tb_products (
+    id CHAR(36) PRIMARY KEY,
     product_name VARCHAR(255) NOT NULL,
     product_description TEXT,
     sku TEXT,
@@ -21,13 +21,10 @@ CREATE TABLE IF NOT EXISTS tb_product (
     stock INT NOT NULL,
     created_on DATETIME NOT NULL,
 	fl_active BOOL NOT NULL,
-	fl_removed BOOL NOT NULL,
 	image_name VARCHAR(128),
 	image_type VARCHAR(20),
-	image_base64 TEXT,
+	image_base64 LONGTEXT,
 	category_id CHAR(36) NOT NULL,
     CONSTRAINT fk_product_category_id FOREIGN KEY (category_id)
-    REFERENCES tb_category (category_id)	
+    REFERENCES tb_categories (id)	
 );
-
-CREATE INDEX idx_product_category_id ON tb_product (category_id);

@@ -7,21 +7,18 @@ namespace HUBVendas.Domain.Entities {
         public T? Data { get; set; }
 
         public void SetErrors(List<string> message) {
-            Info.Messages.Clear();
             Info.Messages = message;
             Info.Success = false;
             Data = default;
         }
         public void SetError(string message) {
-            Info.Messages.Clear();
-            Info.Messages.Add(message);
+            Info.Messages = message ;
             Info.Success = false;
             Data = default;
         }
 
         public void SetSucess(string message, T? data = default) {
-            Info.Messages.Clear();
-            Info.Messages.Add(message);
+            Info.Messages = message ;
             Info.Success = true;
             Data = data;
         }
@@ -30,6 +27,6 @@ namespace HUBVendas.Domain.Entities {
     public class ResponseInfo {
         public bool Success { get; set; } = true;
 
-        public List<string> Messages { get; set; } = new List<string>();
+        public object? Messages { get; set; }
     }
 }

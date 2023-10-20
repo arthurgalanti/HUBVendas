@@ -17,10 +17,8 @@ namespace HUBVendas.Api.Controllers.v1 {
             _categoryService = categoryService;
         }
 
-        [ProducesResponseType(typeof(ResponseResult<List<Product>>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpGet]
-        public async Task<ActionResult> GetAsync([FromQuery] bool onlyActive = true, [FromQuery] bool loadImages = false) {
+        public async Task<ActionResult> GetAsync([FromQuery] bool onlyActive = true, [FromQuery] bool loadImages = true) {
             var response = new ResponseResult<List<Product>>();
 
             try {
@@ -43,13 +41,9 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<Product>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 404)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ResponseResult<Product>>> GetAsync([FromRoute, Required] Guid id) {
             var response = new ResponseResult<Product>();
-
             try {
                 var product = await _productService.GetById(id);
 
@@ -66,12 +60,13 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<Product>), 201)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 400)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpPost]
         public async Task<ActionResult<ResponseResult<object>>> CreateAsync([FromBody] ProductDTO request) {
             var response = new ResponseResult<object>();
+            if (!ModelState.IsValid){
+                response.Info.Messages = ModelState.Select(x =>new { x.Key, message = x.Value!.Errors[0].ErrorMessage });
+                return BadRequest(response);
+            }
 
             try {
                 request.Validate();
@@ -119,13 +114,13 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<object>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 400)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 404)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
         [HttpPut("{id:guid}/edit")]
         public async Task<ActionResult<ResponseResult<object>>> UpdateAsync([FromRoute, Required] Guid id, [FromBody] ProductDTO request, [FromQuery] bool active = true) {
             var response = new ResponseResult<object>();
+            if (!ModelState.IsValid){
+                response.Info.Messages = ModelState.Select(x =>new { x.Key, message = x.Value!.Errors[0].ErrorMessage });
+                return BadRequest(response);
+            }
 
             try {
                 request.Validate();
@@ -150,6 +145,18 @@ namespace HUBVendas.Api.Controllers.v1 {
                 product.SellingPrice = request.SellingPrice != product.SellingPrice ? request.SellingPrice : product.SellingPrice;
                 product.CostPrice = request.CostPrice != product.CostPrice ? request.CostPrice : product.CostPrice;
                 product.Stock = request.Stock != product.Stock ? request.Stock : product.Stock;
+                if (product.Category.Id != request.CategoryId)
+                {
+                    var category = await _categoryService.GetById(request.CategoryId);
+
+                if (category == null) {
+                    response.SetError("A categoria não foi encontrada.");
+                    return NotFound(response);
+                }
+                else
+                product.Category.Id = request.CategoryId;
+                }
+
                 product.Category = new Category { Id = request.CategoryId };
 
                 if (request.Image != null) {
@@ -172,10 +179,7 @@ namespace HUBVendas.Api.Controllers.v1 {
             }
         }
 
-        [ProducesResponseType(typeof(ResponseResult<object>), 200)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 404)]
-        [ProducesResponseType(typeof(ResponseResult<object>), 500)]
-        [HttpPatch("{id:guid}/remove")]
+        [HttpDelete("{id:guid}/remove")]
         public async Task<ActionResult<ResponseResult<object>>> RemoveAsync([FromRoute, Required] Guid id) {
             var response = new ResponseResult<object>();
 

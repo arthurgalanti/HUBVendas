@@ -1,5 +1,4 @@
 using Dapper;
-using System.Data.SqlClient;
 using HUBVendas.Domain.Entities;
 using HUBVendas.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -20,17 +19,15 @@ namespace HUBVendas.Infra.Repositories {
                 var query = @" 
                     SELECT 
                     * 
-                    FROM tb_category 
-                    WHERE fl_removed = 0;
+                    FROM tb_categories;
                 ";
 
                 var result = await con.QueryAsync<dynamic>(query);
 
                 categories = result.Select(item => new Category {
-                    Id = item.category_id,
+                    Id = item.id,
                     CreatedOn = item.created_on,
                     Active = item.fl_active,
-                    Removed = item.fl_removed,
                     Name = item.category_name,
                     Description = item.category_description
                 });
@@ -49,19 +46,17 @@ namespace HUBVendas.Infra.Repositories {
                 var query = @"
                     SELECT
                         *
-                    FROM tb_category
+                    FROM tb_categories
                     WHERE
-                        category_id = @category_id
-                        AND fl_removed = 0;
+                        id = @category_id;
                 ";
 
                 var result = await con.QueryAsync<dynamic>(query, prm);
 
                 category = result.Select(item => new Category {
-                    Id = item.category_id,
+                    Id = id,
                     CreatedOn = item.created_on,
                     Active = item.fl_active,
-                    Removed = item.fl_removed,
                     Name = item.category_name,
                     Description = item.category_description
                 }).FirstOrDefault();
@@ -77,16 +72,15 @@ namespace HUBVendas.Infra.Repositories {
             prm.Add("@category_id", entity.Id);
             prm.Add("@category_name", entity.Name);
             prm.Add("@category_description", entity.Description);
-            prm.Add("@created_on", entity.CreatedOnString);
+            prm.Add("@created_on", entity.CreatedOn.ToString("yyyy-MM-dd HH:mm:ss"));
 
             using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
-                    INSERT INTO tb_category (category_id, created_on, fl_active, fl_removed, category_name, category_description)
+                    INSERT INTO tb_categories (id, created_on, fl_active, category_name, category_description)
                     VALUES (
 						@category_id,
                         @created_on,
                         1,
-                        0,
                         @category_name,
                         @category_description
                     );
@@ -111,14 +105,13 @@ namespace HUBVendas.Infra.Repositories {
 
             using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
-                    UPDATE tb_category
+                    UPDATE tb_categories
                     SET
                         fl_active = @fl_active,
                         category_name = @category_name,
                         category_description = @category_description
                     WHERE
-                        category_id = @category_id
-                        AND fl_removed = 0;
+                        id = @category_id;
                 ";
 
                 var exec = await con.ExecuteAsync(query, prm);
@@ -136,18 +129,14 @@ namespace HUBVendas.Infra.Repositories {
 
             using (var con = new MySqlConnection(_connectionString)) {
                 var query = @"
-                    UPDATE tb_category
-                    SET
-                        fl_removed = 1,
-                        fl_active = 0
+                    DELETE FROM tb_categories
                     WHERE
-                        category_id = @category_id
-                        AND fl_removed = 0;
+                        id = @category_id;
                 ";
 
                 var exec = await con.ExecuteAsync(query, prm);
 
-                result = (exec > 0);
+                result = exec > 0;
             }
 
             return result;
